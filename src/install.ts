@@ -1,8 +1,8 @@
 // Automatically install clangd binary releases from GitHub.
 // This wraps `@clangd/install` in the VSCode UI. See that package for more.
 
-import * as common from '@clangd/install';
-import AbortController from 'abort-controller';
+import type { UI as CommonUI } from './node-clang-index';
+import * as common from './node-clang-index'
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -21,7 +21,7 @@ export async function activate(disposables: vscode.Disposable[],
   return status.clangdPath;
 }
 
-class UI {
+class UI implements CommonUI {
   constructor(private disposables: vscode.Disposable[],
               private globalStoragePath: string) {}
 
@@ -136,5 +136,12 @@ class UI {
     this._pathUpdated = new Promise(resolve => {
       config.update('path', p, vscode.ConfigurationTarget.Global).then(resolve);
     });
+  }
+
+  // Added to resolve issues in type coherency with implementation
+  localize(message: string, ...args: Array<string | number | boolean>): string {
+    return message.replace(/\{(\d+)\}/g, (_, index) => 
+      String(args[Number(index)] ?? `{${index}}`)
+    );
   }
 }
