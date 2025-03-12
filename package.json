@@ -1,8 +1,8 @@
 {
-    "name": "vscode-clangd",
-    "displayName": "clangd",
-    "description": "C/C++ completion, navigation, and insights",
-    "version": "0.1.33",
+    "name": "vscode-clangd-ucpp",
+    "displayName": "clangd-uC++",
+    "description": "uC++/C/C++ completion, navigation, and insights",
+    "version": "0.0.1",
     "publisher": "llvm-vs-code-extensions",
     "license": "MIT",
     "homepage": "https://clangd.llvm.org/",
@@ -47,16 +47,26 @@
         "git-clang-format": "git-clang-format --extensions=ts"
     },
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.758.0",
         "@clangd/install": "0.1.17",
-        "abort-controller": "^3.0.0",
-        "vscode-languageclient": "8.0.2"
+        "node-fetch": "^2.7.0",
+        "readdirp": "^4.1.1",
+        "rimraf": "^6.0.1",
+        "semver": "^7.6.3",
+        "unzipper": "^0.12.3",
+        "vscode-languageclient": "8.0.2",
+        "which": "^5.0.0"
     },
     "devDependencies": {
         "@types/glob": "^7.1.1",
         "@types/mocha": "^7.0.2",
-        "@types/node": "^6.0.40",
+        "@types/node": "^22.0.2",
+        "@types/node-fetch": "^2.6.12",
+        "@types/semver": "^7.5.8",
         "@types/sinon": "^10.0.16",
+        "@types/unzipper": "^0.10.11",
         "@types/vscode": "1.65.0",
+        "@types/which": "^3.0.4",
         "clang-format": "^1.7.0",
         "esbuild": "^0.14.13",
         "glob": "^7.1.4",
