@@ -32,7 +32,7 @@ class ConfigFileWatcherFeature implements vscodelc.StaticFeature {
 
 class ConfigFileWatcher implements vscode.Disposable {
   private databaseWatcher?: vscode.FileSystemWatcher;
-  private debounceTimer?: NodeJS.Timer;
+  private debounceTimer?: NodeJS.Timeout;
 
   dispose() {
     if (this.databaseWatcher)
