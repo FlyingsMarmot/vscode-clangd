@@ -2,8 +2,8 @@
     "name": "vscode-clangd-ucpp",
     "displayName": "clangd-uC++",
     "description": "uC++/C/C++ completion, navigation, and insights",
-    "version": "0.0.1",
-    "publisher": "llvm-vs-code-extensions",
+    "version": "0.0.3",
+    "publisher": "FlyingsMarmot",
     "license": "MIT",
     "homepage": "https://clangd.llvm.org/",
     "icon": "icon.png",
@@ -18,6 +18,7 @@
     "keywords": [
         "C",
         "C++",
+        "uC++",
         "clang",
         "clangd",
         "LLVM"
@@ -79,7 +80,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/clangd/vscode-clangd.git"
+        "url": "https://github.com/FlyingsMarmot/vscode-clangd"
     },
     "qna": "marketplace",
     "capabilities": {
