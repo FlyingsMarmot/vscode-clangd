@@ -116,17 +116,14 @@ export async function installLatest(ui: UI) {
   const abort = new AbortController();
   try {
     const release = await Github.latestRelease();
-    console.log(release.name)
-    console.log(release.tag_name)
     const asset = await Github.chooseAsset(release);
-    console.log(asset)
     ui.clangdPath = await Install.install(release, asset, abort, ui);
-    ui.promptReload(ui.localize('clangd {0} is now installed.', release.name));
+    ui.promptReload(ui.localize('uC++ clangd {0} is now installed.', release.name));
   } catch (e) {
     if (!abort.signal.aborted) {
-      console.error('Failed to install clangd: ', e);
+      console.error('Failed to install uC++ clangd: ', e);
       const message = ui.localize(
-        'Failed to install clangd language server: {0}\nYou may want to install it manually.',
+        'Failed to install uC++ clangd language server: {0}\nYou may want to install it manually.',
         e as string,
       );
       ui.showHelp(message, installURL);
@@ -151,7 +148,7 @@ export async function checkUpdates(requested: boolean, ui: UI) {
     return;
   }
   console.info(
-    'Checking for clangd update: available=',
+    'Checking for uC++ clangd update: available=',
     upgrade.new,
     ' installed=',
     upgrade.old,
@@ -161,7 +158,7 @@ export async function checkUpdates(requested: boolean, ui: UI) {
     if (requested)
       ui.info(
         ui.localize(
-          'clangd is up-to-date (you have {0}, latest is {1})',
+          'uC++ clangd is up-to-date (you have {0}, latest is {1})',
           upgrade.old,
           upgrade.new,
         ),
@@ -182,7 +179,7 @@ async function recover(ui: UI) {
   } catch (e) {
     console.error('Auto-install failed: ', e);
     ui.showHelp(
-      ui.localize('The clangd language server is not installed.'),
+      ui.localize('The uC++ clangd language server is not installed.'),
       installURL,
     );
   }
@@ -191,9 +188,7 @@ async function recover(ui: UI) {
 const installURL = 'https://clangd.llvm.org/installation.html';
 // The GitHub API endpoint for the latest binary clangd release.
 let githubReleaseURL =
-  // 'https://api.github.com/repos/clangd/clangd/releases/latest';
-  'https://api.github.com/repos/FlyingsMarmot/llvm-project/releases/tags/flyings_marmot-0.0.1-alpha'
-  // 'https://api.github.com/repos/FlyingsMarmot/llvm-project/releases/latest';
+  'https://api.github.com/repos/FlyingsMarmot/llvm-project/releases/latest';
 // Set a fake URL for testing.
 export function fakeGitHubReleaseURL(u: string) {
   githubReleaseURL = u;
@@ -245,12 +240,6 @@ namespace Github {
       darwin: 'mac',
     };
     const variant = variants[os.platform()];
-
-    console.log("CHOOSE_ASSETS");
-    console.log(os.platform());
-    console.log(release.assets)
-    console.log(variant);
-    console.log(os.arch());
 
     if (variant == 'linux') {
       // Hardcoding this here is sad, but we'd like to offer a nice error message
@@ -311,13 +300,12 @@ namespace Install {
     const extractRoot = path.join(dirs.install, release.tag_name);
     // readdirp returns an empty array if the directory doesn't exist.
     const entries = await readdirpPromise(extractRoot);
-    console.log("ENTRIES " + entries);
     if (entries.length !== 0) {
       const reuse = await ui.shouldReuse(release.name);
       if (reuse === undefined) {
         // User dismissed prompt, bail out.
         abort.abort();
-        throw new Error(`clangd ${release.name} already installed!`);
+        throw new Error(`uC++ clangd ${release.name} already installed!`);
       }
       if (reuse) {
         // Find clangd within the existing directory.
@@ -333,10 +321,8 @@ namespace Install {
       }
     }
     const zipFile = path.join(dirs.download, asset.name);
-    console.log("ZIP FILE " + zipFile)
     await download(asset.browser_download_url, zipFile, abort, ui);
     const archive = await unzipper.Open.file(zipFile);
-    console.log("ARCHIVE " + archive);
     const executable = archive.files.find(
       (file) => path.basename(file.path) == clangdFilename,
     );
@@ -429,11 +415,11 @@ namespace Version {
     const prefix = 'clangd version ';
     const pos = output.indexOf(prefix);
     if (pos < 0)
-      throw new Error(`Couldn't parse clangd --version output: ${output}`);
+      throw new Error(`Couldn't parse uC++ clangd --version output: ${output}`);
     if (pos > 0) {
       const vendor = output.substring(0, pos).trim();
       if (vendor == 'Apple')
-        throw new Error(`Cannot compare vendor's clangd version: ${output}`);
+        throw new Error(`Cannot compare vendor's uC++ clangd version: ${output}`);
     }
     // Some vendors add trailing ~patchlevel, ignore this.
     const rawVersion = output.substr(pos + prefix.length).split(/\s|~/, 1)[0];

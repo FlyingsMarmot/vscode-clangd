@@ -124,7 +124,7 @@ class UI implements CommonUI {
   }
 
   get clangdPath(): string {
-    let p = config.get<string>('path');
+    let p = config.get<string>('pathucpp');
     // Backwards compatibility: if it's a relative path with a slash, interpret
     // relative to project root.
     if (!path.isAbsolute(p) && p.includes(path.sep) &&
@@ -134,7 +134,7 @@ class UI implements CommonUI {
   }
   set clangdPath(p: string) {
     this._pathUpdated = new Promise(resolve => {
-      config.update('path', p, vscode.ConfigurationTarget.Global).then(resolve);
+      config.update('pathucpp', p, vscode.ConfigurationTarget.Global).then(resolve);
     });
   }
 

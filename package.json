@@ -109,7 +109,7 @@
             "type": "object",
             "title": "clangd",
             "properties": {
-                "clangd.path": {
+                "clangd.pathucpp": {
                     "type": "string",
                     "default": "clangd",
                     "scope": "machine-overridable",
