@@ -1,7 +1,11 @@
-# clangd-ucpp
+# clangd-µC++
+
+## clangd-µC++ is a customized fork of clangd that enhances support for the [µC++ programming language](https://plg.uwaterloo.ca/usystem/uC++.html), used in the CS 343 course at the University of Waterloo.
+
+<hr>
 
 [clangd](https://clangd.llvm.org) helps developers write, understand and
-improve C/C++ code by providing:
+improve C/C++/µC++ code by providing:
 
  - code completion
  - compile errors and warnings
@@ -12,9 +16,6 @@ improve C/C++ code by providing:
  - simple refactorings
 
 Full documentation for clangd is at [clangd.llvm.org](https://clangd.llvm.org).
-
-Our fork of clangd adds additional support for the [µC++ programming language](https://plg.uwaterloo.ca/usystem/uC++.html), used
-in courses such as CS 343 at the University of Waterloo.
 
 ## Setup
 
@@ -49,7 +50,9 @@ Suggestions will appear as you type names, or after `.` or `->`.
 Because clangd uses a full C++ parser, code completion has access to precise
 type information.
 
-![Code completion](doc-assets/complete.png)
+![Code completion](doc-assets/ucpp_complete.png)
+
+![Code for coroutine completion](doc-assets/ucpp_coroutine_complete.png)
 
 ### Errors, warnings, and clang-tidy
 
@@ -57,7 +60,7 @@ Code errors are shown as you type (both as red squiggle underlines, and in the
 "Problems" panel). These are the same as produced by the clang compiler, and
 suggested fixes can automatically be applied.
 
-![Error with fix](doc-assets/diagnostics.png)
+![Error with fix](doc-assets/ucpp_diagnostics.png)
 
 Most clang-tidy checks are supported (these can be enabled using a [.clang-tidy
 file](https://clang.llvm.org/extra/clang-tidy/)).
@@ -75,7 +78,7 @@ Press `Ctrl-P #` to quickly navigate to a symbol by name.
 
 Clangd can describe almost any entity if you hover the mouse (or press Ctrl-KI).
 
-![Hover and inlay hints](doc-assets/hover.png)
+![Hover and inlay hints](doc-assets/ucpp_hover.png)
 
 Inlay hints for parameters and deduced types can be shown temporarily or
 permanently (the `editor.inlayHints.enabled` setting controls this).
