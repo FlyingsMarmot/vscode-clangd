@@ -2,7 +2,7 @@
     "name": "vscode-clangd-ucpp",
     "displayName": "clangd-uC++",
     "description": "uC++/C/C++ completion, navigation, and insights",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "FlyingsMarmot",
     "license": "MIT",
     "homepage": "https://clangd.llvm.org/",
