@@ -6,6 +6,47 @@ A guide of developing `vscode-clangd` extension.
 
 * VS Code
 * Node.js 20 and npm
+* CMake and Ninja when building the uC++ clangd backend
+
+## uC++ backend quick start
+
+For the simplest setup, clone the repositories beside each other:
+
+```text
+development/
+├── llvm-project/
+└── vscode-clangd/
+```
+
+Then run this from `vscode-clangd`:
+
+```bash
+npm ci
+npm run dev:all
+```
+
+This configures and builds the local backend, runs its parser and semantic
+highlighting tests, packages and installs the extension into an isolated VS
+Code profile, writes the local `clangd.path` setting, and opens a disposable
+test project.
+
+For faster incremental development, run only the required stage:
+
+```bash
+npm run dev:backend
+npm run dev:test-backend
+npm run dev:vscode
+```
+
+No environment variables are required. If the repositories are not siblings,
+pass the backend location after `--`:
+
+```bash
+npm run dev:all -- --llvm-project /path/to/llvm-project
+```
+
+Use `--no-launch` to prepare the isolated profile without opening VS Code.
+Run `npm run dev:all -- --help` for all path and build options.
 
 ## Building and running (command line)
 

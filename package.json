@@ -8,6 +8,7 @@
     "homepage": "https://github.com/FlyingsMarmot/vscode-clangd",
     "icon": "icon.png",
     "engines": {
+        "node": ">=20",
         "vscode": "^1.65.0"
     },
     "categories": [
@@ -39,10 +40,15 @@
         "vscode:prepublish": "npm run check-ts && npm run esbuild -- --minify --keep-names",
         "compile": "npm run esbuild -- --sourcemap",
         "check-ts": "tsc -noEmit -p ./",
-        "format": "clang-format -i --glob=\"{src,test}/*.ts\"",
+        "format": "clang-format -i --glob=\"{src,test,scripts}/*.ts\"",
         "test-compile": "tsc -p ./ && npm run compile",
         "test": "npm run test-compile && node ./out/test/index.js",
         "package": "vsce package --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
+        "dev:compile": "tsc -p tsconfig.scripts.json",
+        "dev:backend": "npm run dev:compile --silent && node .vscode-test/dev-tools/ucpp-dev.js backend",
+        "dev:test-backend": "npm run dev:compile --silent && node .vscode-test/dev-tools/ucpp-dev.js test",
+        "dev:vscode": "npm run dev:compile --silent && node .vscode-test/dev-tools/ucpp-dev.js vscode",
+        "dev:all": "npm run dev:compile --silent && node .vscode-test/dev-tools/ucpp-dev.js all",
         "publish": "vsce publish --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
         "publish-openvsx": "ovsx publish --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
         "git-clang-format": "git-clang-format --extensions=ts"
