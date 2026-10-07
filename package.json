@@ -100,6 +100,15 @@
                 "firstLine": "^/[/*].*-\\*-\\s*C\\+\\+\\s*-\\*-.*"
             }
         ],
+        "grammars": [
+            {
+                "scopeName": "ucpp.injection",
+                "path": "./syntaxes/ucpp.tmLanguage.json",
+                "injectTo": [
+                    "source.cpp"
+                ]
+            }
+        ],
         "configuration": {
             "type": "object",
             "title": "clangd",

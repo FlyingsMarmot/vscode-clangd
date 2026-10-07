@@ -7,6 +7,7 @@
 !icon.png
 !out/bundle.js
 !package.json
+!syntaxes/**
 docs/**
 test/**
 uCPP/**
