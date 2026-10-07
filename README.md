@@ -1,6 +1,6 @@
 # clangd-µC++
 
-## clangd-µC++ is a customized fork of clangd that enhances support for the [µC++ programming language](https://plg.uwaterloo.ca/usystem/uC++.html), used in the CS 343 course at the University of Waterloo.
+clangd-µC++ is a customized fork of clangd that enhances support for the [µC++ programming language](https://plg.uwaterloo.ca/usystem/uC++.html), used in the CS 343 course at the University of Waterloo.
 
 <hr>
 
@@ -22,13 +22,29 @@ Full documentation for clangd is at [clangd.llvm.org](https://clangd.llvm.org).
 ### Important Notes
 
 - **Conflict Warning:** If installed, users should disable or uninstall the regular [vscode-clangd](https://marketplace.visualstudio.com/items?itemName=llvm-vs-code-extensions.vscode-clangd) extension to avoid potential conflicts.
-- **Intended Environment:** This extension is meant to be used on [linux.student.cs.uwaterloo.ca](https://uwaterloo.ca/computer-science-computing-facility/teaching-hosts). Functionality is not guaranteed outside this environment.
+- **Supported Platforms:** Prebuilt language-server packages are provided for
+  x86-64 Linux, Intel macOS, and Apple Silicon macOS. Building and running uC++
+  programs still requires a compatible uC++ toolchain.
 
 ### `clangd` server
 
 The extension requires the `clangd` language server.
 You will be prompted to download it if it's not found on your PATH.
-(Automatic installation is possible on x86-64 Linux).
+Automatic installation is available on the supported platforms listed above.
+
+The server recognizes the complete uC++ translator keyword set, including
+coroutines, tasks, actors, exceptions, mutex specifications, accept/select
+statements, resumption, timeout, enable/disable, and finally syntax. The
+standard C++ alternative operators `and`, `or`, and `not` remain ordinary C++
+operators; `and` and `or` are interpreted as uC++ connectors only where the
+uC++ grammar permits them.
+
+The translator spellings covered are `_Accept`, `_AcceptReturn`, `_AcceptWait`,
+`_Actor`, `_At`, `_Catch`, `_CatchResume`, `_CorActor`, `_Coroutine`,
+`_Disable`, `_Else`, `_Enable`, `_Event`, `_Exception`, `_Finally`, `_Mutex`,
+`_Nomutex`, `_PeriodicTask`, `_RealTimeTask`, `_Resume`, `_ResumeTop`,
+`_Select`, `_SporadicTask`, `_Task`, `_Throw`, `_Timeout`, `_When`, and
+`_With`. The runtime aliases `_Monitor` and `_Cormonitor` are also accepted.
 
 If you have an old version of clangd installed on your system already, you can
 run "Check for clangd language server update" from the command palette.

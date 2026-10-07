@@ -13,7 +13,11 @@ jobs:
       run: |
         Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         echo "DISPLAY=:99" >> $GITHUB_ENV
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: npm
     - name: read version
       id: version
       uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -27,12 +31,12 @@ jobs:
     - name: package
       run: npm run package
     - name: rename
-      run: mv vscode-clangd-${{ steps.version.outputs.current-version }}.vsix
-              vscode-clangd-unstable-${{ steps.commit_id.outputs.commit_id }}.vsix
+      run: mv vscode-clangd-ucpp-${{ steps.version.outputs.current-version }}.vsix
+              vscode-clangd-ucpp-unstable-${{ steps.commit_id.outputs.commit_id }}.vsix
     - name: publish to Github
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "vscode-clangd-unstable-${{ steps.commit_id.outputs.commit_id }}.vsix"
+        artifacts: "vscode-clangd-ucpp-unstable-${{ steps.commit_id.outputs.commit_id }}.vsix"
         tag: ${{ github.event.inputs.tag }}
         commit: master
         prerelease: true

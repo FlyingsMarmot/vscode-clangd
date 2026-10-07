@@ -1,7 +1,13 @@
 **
-!*.md
-!*.png
+!README.md
+!CHANGELOG.md
+!DEVELOPING.md
+!LICENSE
 !doc-assets/**
 !icon.png
 !out/bundle.js
 !package.json
+docs/**
+test/**
+uCPP/**
+*.vsix

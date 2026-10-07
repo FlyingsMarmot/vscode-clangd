@@ -2,10 +2,10 @@
     "name": "vscode-clangd-ucpp",
     "displayName": "clangd-uC++",
     "description": "uC++/C/C++ completion, navigation, and insights",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "publisher": "FlyingsMarmot",
     "license": "MIT",
-    "homepage": "https://clangd.llvm.org/",
+    "homepage": "https://github.com/FlyingsMarmot/vscode-clangd",
     "icon": "icon.png",
     "engines": {
         "vscode": "^1.65.0"
@@ -35,28 +35,23 @@
     ],
     "main": "./out/bundle",
     "scripts": {
-        "esbuild": "esbuild ./src/extension.ts --bundle --outfile=out/bundle.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "esbuild ./src/extension.ts --bundle --outfile=out/bundle.js --external:vscode --external:@aws-sdk/client-s3 --format=cjs --platform=node",
         "vscode:prepublish": "npm run check-ts && npm run esbuild -- --minify --keep-names",
         "compile": "npm run esbuild -- --sourcemap",
         "check-ts": "tsc -noEmit -p ./",
         "format": "clang-format -i --glob=\"{src,test}/*.ts\"",
         "test-compile": "tsc -p ./ && npm run compile",
         "test": "npm run test-compile && node ./out/test/index.js",
-        "package": "vsce package --baseImagesUrl https://raw.githubusercontent.com/clangd/vscode-clangd/master/",
-        "publish": "vsce publish --baseImagesUrl https://raw.githubusercontent.com/clangd/vscode-clangd/master/",
-        "publish-openvsx": "ovsx publish --baseImagesUrl https://raw.githubusercontent.com/clangd/vscode-clangd/master/",
+        "package": "vsce package --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
+        "publish": "vsce publish --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
+        "publish-openvsx": "ovsx publish --baseImagesUrl https://raw.githubusercontent.com/FlyingsMarmot/vscode-clangd/master/",
         "git-clang-format": "git-clang-format --extensions=ts"
     },
     "dependencies": {
-        "@aws-sdk/client-s3": "^3.758.0",
-        "@clangd/install": "0.1.17",
         "node-fetch": "^2.7.0",
-        "readdirp": "^4.1.1",
-        "rimraf": "^6.0.1",
         "semver": "^7.6.3",
         "unzipper": "^0.12.3",
-        "vscode-languageclient": "8.0.2",
-        "which": "^5.0.0"
+        "vscode-languageclient": "8.0.2"
     },
     "devDependencies": {
         "@types/glob": "^7.1.1",
@@ -67,7 +62,6 @@
         "@types/sinon": "^10.0.16",
         "@types/unzipper": "^0.10.11",
         "@types/vscode": "1.65.0",
-        "@types/which": "^3.0.4",
         "clang-format": "^1.7.0",
         "esbuild": "^0.14.13",
         "glob": "^7.1.4",
@@ -89,6 +83,7 @@
             "description": "In restricted mode clangd.path and clangd.arguments are not respected.",
             "restrictedConfigurations": [
                 "clangd.path",
+                "clangd.pathucpp",
                 "clangd.useScriptAsExecutable",
                 "clangd.arguments"
             ]
@@ -109,11 +104,18 @@
             "type": "object",
             "title": "clangd",
             "properties": {
+                "clangd.path": {
+                    "type": "string",
+                    "default": "clangd",
+                    "scope": "machine-overridable",
+                    "description": "The path to the uC++ clangd executable, e.g. /usr/bin/clangd."
+                },
                 "clangd.pathucpp": {
                     "type": "string",
                     "default": "clangd",
                     "scope": "machine-overridable",
-                    "description": "The path to clangd executable, e.g.: /usr/bin/clangd."
+                    "description": "Legacy path to the uC++ clangd executable.",
+                    "deprecationMessage": "Use clangd.path instead. Existing values continue to work."
                 },
                 "clangd.useScriptAsExecutable": {
                     "type": "boolean",
