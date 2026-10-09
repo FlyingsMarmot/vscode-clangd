@@ -1,6 +1,6 @@
 {
     "name": "flyingsmarmot-clangd-ucpp",
-    "displayName": "clangd-uC++",
+    "displayName": "clangd-uC++ (UW)",
     "description": "uC++/C/C++ completion, navigation, and insights",
     "version": "1.2.0",
     "publisher": "FlyingsMarmotUW",
