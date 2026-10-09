@@ -38,6 +38,8 @@ jobs:
     - name: publish to Github
       uses: ncipollo/release-action@v1
       with:
+        allowUpdates: true
+        omitBodyDuringUpdate: true
         artifacts: "vscode-clangd-ucpp-unstable-${{ steps.commit_id.outputs.commit_id }}.vsix"
         tag: ${{ github.event.inputs.tag }}
         commit: master
