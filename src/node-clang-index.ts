@@ -102,8 +102,7 @@ export async function prepare(
     const entries = await listFiles(path.join(ui.storagePath, 'install'));
     const filename = currentPlatform() == 'win32' ? 'clangd.exe' : 'clangd';
     for (const entry of entries.reverse()) {
-      if (entry.basename == filename &&
-          await supportsUcpp(entry.fullPath)) {
+      if (entry.basename == filename && await supportsUcpp(entry.fullPath)) {
         clangdPath = entry.fullPath;
         break;
       }
