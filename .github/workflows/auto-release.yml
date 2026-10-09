@@ -1,5 +1,6 @@
 name: Publish release
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
     paths: [ 'package.json' ]
@@ -19,34 +20,52 @@ jobs:
         node-version: 20
         cache: npm
     - name: detect version
+      if: github.event_name == 'push'
       uses: EndBug/version-check@v1
       id: check
       with:
         diff-search: true # seach the diff content with version
-    - if: steps.check.outputs.changed == 'true'
+    - name: select release
+      id: release
+      env:
+        EVENT_NAME: ${{ github.event_name }}
+        VERSION_CHANGED: ${{ steps.check.outputs.changed }}
+        DETECTED_VERSION: ${{ steps.check.outputs.version }}
+        DETECTED_COMMIT: ${{ steps.check.outputs.commit }}
+      run: |
+        if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "version=$(node -p 'require("./package.json").version')" >> "$GITHUB_OUTPUT"
+          echo "commit=$GITHUB_SHA" >> "$GITHUB_OUTPUT"
+        else
+          echo "changed=$VERSION_CHANGED" >> "$GITHUB_OUTPUT"
+          echo "version=$DETECTED_VERSION" >> "$GITHUB_OUTPUT"
+          echo "commit=$DETECTED_COMMIT" >> "$GITHUB_OUTPUT"
+        fi
+    - if: steps.release.outputs.changed == 'true'
       run: npm ci
-    - if: steps.check.outputs.changed == 'true'
+    - if: steps.release.outputs.changed == 'true'
       run: npm test
     - name: package
-      if: steps.check.outputs.changed == 'true'
+      if: steps.release.outputs.changed == 'true'
       run: npm run package
     - name: publish to Github
       uses: ncipollo/release-action@v1
-      if: steps.check.outputs.changed == 'true'
+      if: steps.release.outputs.changed == 'true'
       with:
         allowUpdates: true
         omitBodyDuringUpdate: true
         artifacts: "vscode-clangd-*.vsix"
-        tag: ${{ steps.check.outputs.version }}
-        commit: ${{ steps.check.outputs.commit }}
+        tag: ${{ steps.release.outputs.version }}
+        commit: ${{ steps.release.outputs.commit }}
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: publish to VSCode Marketplace
-      if: steps.check.outputs.changed == 'true'
+      if: steps.release.outputs.changed == 'true'
       # The token will expire. Regenerate it at:
       # https://llvm-vs-code-extensions.visualstudio.com/_usersSettings/tokens.
       run: npm run publish -- -p "${{ secrets.VSCODE_MARKETPLACE_TOKEN }}"
     - name: publish to OpenVSX
-      if: steps.check.outputs.changed == 'true'
+      if: steps.release.outputs.changed == 'true'
       # The token will expire. Regenerate it at:
       # https://open-vsx.org/user-settings/tokens
       run: npm run publish-openvsx -- -p "${{ secrets.OPENVSX_TOKEN }}"
