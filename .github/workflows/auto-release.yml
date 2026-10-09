@@ -5,6 +5,8 @@ on:
     paths: [ 'package.json' ]
 jobs:
   publish:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: start X server
