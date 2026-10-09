@@ -29,8 +29,16 @@ Full documentation for clangd is at [clangd.llvm.org](https://clangd.llvm.org).
 ### `clangd` server
 
 The extension requires the `clangd` language server.
-You will be prompted to download it if it's not found on your PATH.
-Automatic installation is available on the supported platforms listed above.
+The extension automatically installs its uC++ backend when no compatible
+language server is configured, provided a matching release asset is available.
+
+On first activation, the extension checks that the configured language server
+actually parses uC++ syntax. If it is missing or is a standard clangd build,
+the extension downloads a compatible stable uC++ backend and starts it
+automatically. Downloads require an internet connection and a release asset
+for your operating system and architecture. If no compatible asset is
+published, setup reports the missing platform instead of starting standard
+clangd. You can also set `clangd.path` to a locally built uC++ backend.
 
 The server recognizes the complete uC++ translator keyword set, including
 coroutines, tasks, actors, exceptions, mutex specifications, accept/select

@@ -94,17 +94,74 @@ export async function prepare(
   } else {
     clangdPath = await findExecutable(clangdPath);
   }
+  if (clangdPath !== null && !await supportsUcpp(clangdPath))
+    clangdPath = null;
+  if (clangdPath === null) {
+    // Workspace settings may still point at stock clangd. Reuse our managed
+    // installation without downloading or asking to reinstall on every start.
+    const entries = await listFiles(path.join(ui.storagePath, 'install'));
+    const filename = currentPlatform() == 'win32' ? 'clangd.exe' : 'clangd';
+    for (const entry of entries.reverse()) {
+      if (entry.basename == filename &&
+          await supportsUcpp(entry.fullPath)) {
+        clangdPath = entry.fullPath;
+        break;
+      }
+    }
+  }
+  if (clangdPath === null) {
+    const abort = new AbortController();
+    try {
+      const release = await Github.latestRelease();
+      const asset = await Github.chooseAsset(release);
+      ui.info(
+          ui.localize('Installing the uC++ language server for this machine.'));
+      clangdPath = await Install.install(release, asset, abort, ui);
+      if (!await supportsUcpp(clangdPath))
+        throw new Error(
+            'The downloaded language server does not support uC++.');
+      ui.clangdPath = clangdPath;
+    } catch (error) {
+      clangdPath = null;
+      if (!abort.signal.aborted) {
+        ui.showHelp(
+            ui.localize('Could not set up the uC++ language server: {0}',
+                        String(error)),
+            installURL,
+        );
+      }
+    }
+  }
   return {
     clangdPath,
-    background:
-        clangdPath === null
-            ? // Couldn't find clangd - start recovery flow and stop extension
-              // loading.
-            recover(ui)
-            : // Allow extension to load, asynchronously check for updates.
-            checkUpdate ? checkUpdates(/*requested=*/ false, ui)
-                        : Promise.resolve(),
+    background: clangdPath !== null && checkUpdate
+                    ? checkUpdates(/*requested=*/ false, ui)
+                    : Promise.resolve(),
   };
+}
+
+// Check actual parser support rather than relying on a vendor/version string.
+export async function supportsUcpp(clangdPath: string): Promise<boolean> {
+  const directory =
+      await fs.promises.mkdtemp(path.join(os.tmpdir(), 'clangd-ucpp-'));
+  try {
+    const source = path.join(directory, 'probe.cpp');
+    await fs.promises.writeFile(source,
+                                '_Coroutine Probe {};\n_Task TaskProbe {};\n');
+    // Isolate the check from compilation databases in parent directories.
+    await fs.promises.writeFile(path.join(directory, 'compile_flags.txt'),
+                                '-std=c++20\n');
+    return await new Promise<boolean>((resolve) => {
+      child_process.execFile(
+          clangdPath,
+          [`--check=${source}`, '--log=error', '--enable-config=false'],
+          {timeout: 15000, cwd: directory},
+          (error) => resolve(error === null),
+      );
+    });
+  } finally {
+    await fs.promises.rm(directory, {recursive: true, force: true});
+  }
 }
 
 // The user has explicitly asked to install the latest clangd.
@@ -114,7 +171,10 @@ export async function installLatest(ui: UI) {
   try {
     const release = await Github.latestRelease();
     const asset = await Github.chooseAsset(release);
-    ui.clangdPath = await Install.install(release, asset, abort, ui);
+    const clangdPath = await Install.install(release, asset, abort, ui);
+    if (!await supportsUcpp(clangdPath))
+      throw new Error('The downloaded language server does not support uC++.');
+    ui.clangdPath = clangdPath;
     ui.promptReload(
         ui.localize('uC++ clangd {0} is now installed.', release.name));
   } catch (e) {
@@ -164,23 +224,6 @@ export async function checkUpdates(requested: boolean, ui: UI) {
     return;
   }
   ui.promptUpdate(upgrade.old, upgrade.new);
-}
-
-// The extension has detected clangd isn't available.
-// Inform the user, and if possible offer to install or adjust the path.
-// Unlike installLatest(), we've had no explicit user request or consent yet.
-async function recover(ui: UI) {
-  try {
-    const release = await Github.latestRelease();
-    await Github.chooseAsset(release); // Ensure a binary for this platform.
-    ui.promptInstall(release.name);
-  } catch (e) {
-    console.error('Auto-install failed: ', e);
-    ui.showHelp(
-        ui.localize('The uC++ clangd language server is not installed.'),
-        installURL,
-    );
-  }
 }
 
 const installURL = 'https://github.com/FlyingsMarmot/llvm-project/releases';
