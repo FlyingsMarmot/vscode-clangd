@@ -10,7 +10,7 @@ The Marketplace extension identity is formed from the `publisher` and `name`
 fields in `package.json`:
 
 ```text
-FlyingsMarmot.vscode-clangd-ucpp
+FlyingsMarmot.flyingsmarmot-clangd-ucpp
 ```
 
 ## Recommended release flow

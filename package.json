@@ -1,5 +1,5 @@
 {
-    "name": "vscode-clangd-ucpp",
+    "name": "flyingsmarmot-clangd-ucpp",
     "displayName": "clangd-uC++",
     "description": "uC++/C/C++ completion, navigation, and insights",
     "version": "1.2.0",

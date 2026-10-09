@@ -55,7 +55,7 @@ jobs:
       with:
         allowUpdates: true
         omitBodyDuringUpdate: true
-        artifacts: "vscode-clangd-*.vsix"
+        artifacts: "flyingsmarmot-clangd-ucpp-*.vsix"
         tag: ${{ steps.release.outputs.version }}
         commit: ${{ steps.release.outputs.commit }}
         token: ${{ secrets.GITHUB_TOKEN }}
