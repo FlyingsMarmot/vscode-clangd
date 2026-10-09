@@ -1,0 +1,18 @@
+{
+    "scopeName": "ucpp.injection",
+    "injectionSelector": "L:source.cpp",
+    "patterns": [
+        {
+            "name": "storage.type.class.ucpp",
+            "match": "\\b(?:_Actor|_CorActor|_Cormonitor|_Coroutine|_Event|_Exception|_Monitor|_PeriodicTask|_RealTimeTask|_SporadicTask|_Task)\\b"
+        },
+        {
+            "name": "storage.modifier.ucpp",
+            "match": "\\b(?:_Mutex|_Nomutex)\\b"
+        },
+        {
+            "name": "keyword.control.ucpp",
+            "match": "\\b(?:_Accept|_AcceptReturn|_AcceptWait|_At|_Catch|_CatchResume|_Disable|_Else|_Enable|_Finally|_Resume|_ResumeTop|_Select|_Throw|_Timeout|_When|_With)\\b"
+        }
+    ]
+}

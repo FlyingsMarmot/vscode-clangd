@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.1.0: October 7, 2026
+
+* Complete parser coverage for the uC++ translator keyword and statement set.
+* Preserve standard C++ `and`, `or`, and `not` operator behavior while
+  recognizing contextual uC++ accept/select connectors.
+* Use the standard `clangd.path` setting while retaining compatibility with
+  the legacy `clangd.pathucpp` setting.
+* Make binary selection architecture-aware and avoid offering the historical
+  Linux archive on unsupported systems.
+* Remove unused installer dependencies and add installer regression tests.
+
 ## Version 0.1.33: November 21, 2024
 
 * Reverted [#730](https://github.com/clangd/vscode-clangd/pull/730) for causing [#734](https://github.com/clangd/vscode-clangd/issues/734)

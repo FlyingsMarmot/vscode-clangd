@@ -1,8 +1,7 @@
-// Automatically install clangd binary releases from GitHub.
-// This wraps `@clangd/install` in the VSCode UI. See that package for more.
+// Automatically install uC++ clangd binary releases from GitHub.
 
-import type { UI as CommonUI } from './node-clang-index';
-import * as common from './node-clang-index'
+import type {UI as CommonUI} from './node-clang-index';
+import * as common from './node-clang-index';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
@@ -124,7 +123,22 @@ class UI implements CommonUI {
   }
 
   get clangdPath(): string {
-    let p = config.get<string>('pathucpp');
+    const settings = vscode.workspace.getConfiguration('clangd');
+    const explicitlyConfigured = (key: string) => {
+      const inspected = settings.inspect<string>(key);
+      return inspected !== undefined &&
+             (inspected.globalValue !== undefined ||
+              inspected.workspaceValue !== undefined ||
+              inspected.workspaceFolderValue !== undefined);
+    };
+    // clangd.pathucpp was used by early releases of this fork. Prefer the
+    // standard clangd.path setting, but keep existing installations working
+    // until users naturally migrate.
+    const key =
+        explicitlyConfigured('path') || !explicitlyConfigured('pathucpp')
+            ? 'path'
+            : 'pathucpp';
+    let p = config.get<string>(key);
     // Backwards compatibility: if it's a relative path with a slash, interpret
     // relative to project root.
     if (!path.isAbsolute(p) && p.includes(path.sep) &&
@@ -134,14 +148,14 @@ class UI implements CommonUI {
   }
   set clangdPath(p: string) {
     this._pathUpdated = new Promise(resolve => {
-      config.update('pathucpp', p, vscode.ConfigurationTarget.Global).then(resolve);
+      config.update('path', p, vscode.ConfigurationTarget.Global).then(resolve);
     });
   }
 
   // Added to resolve issues in type coherency with implementation
-  localize(message: string, ...args: Array<string | number | boolean>): string {
-    return message.replace(/\{(\d+)\}/g, (_, index) => 
-      String(args[Number(index)] ?? `{${index}}`)
-    );
+  localize(message: string, ...args: Array<string|number|boolean>): string {
+    return message.replace(/\{(\d+)\}/g,
+                           (_, index) =>
+                               String(args[Number(index)] ?? `{${index}}`));
   }
 }
