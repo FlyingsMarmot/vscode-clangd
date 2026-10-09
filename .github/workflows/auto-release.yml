@@ -15,16 +15,29 @@ jobs:
         Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         echo "DISPLAY=:99" >> $GITHUB_ENV
     - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     - uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: npm
     - name: detect version
       if: github.event_name == 'push'
-      uses: EndBug/version-check@v1
       id: check
-      with:
-        diff-search: true # seach the diff content with version
+      env:
+        BEFORE_COMMIT: ${{ github.event.before }}
+      run: |
+        node <<'NODE'
+        const fs = require('fs');
+        const {execFileSync} = require('child_process');
+        const version = require('./package.json').version;
+        const before = process.env.BEFORE_COMMIT;
+        const previousVersion = /^0+$/.test(before) ? null : JSON.parse(
+          execFileSync('git', ['show', `${before}:package.json`], {encoding: 'utf8'})
+        ).version;
+        fs.appendFileSync(process.env.GITHUB_OUTPUT,
+          `changed=${version !== previousVersion}\nversion=${version}\ncommit=${process.env.GITHUB_SHA}\n`);
+        NODE
     - name: select release
       id: release
       env:
@@ -32,6 +45,7 @@ jobs:
         VERSION_CHANGED: ${{ steps.check.outputs.changed }}
         DETECTED_VERSION: ${{ steps.check.outputs.version }}
         DETECTED_COMMIT: ${{ steps.check.outputs.commit }}
+        OPENVSX_TOKEN: ${{ secrets.OPENVSX_TOKEN }}
       run: |
         if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
           echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -41,6 +55,12 @@ jobs:
           echo "changed=$VERSION_CHANGED" >> "$GITHUB_OUTPUT"
           echo "version=$DETECTED_VERSION" >> "$GITHUB_OUTPUT"
           echo "commit=$DETECTED_COMMIT" >> "$GITHUB_OUTPUT"
+        fi
+        if [ -n "$OPENVSX_TOKEN" ]; then
+          echo "publish_openvsx=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "publish_openvsx=false" >> "$GITHUB_OUTPUT"
+          echo "::notice::Skipping OpenVSX publication: OPENVSX_TOKEN is not configured."
         fi
     - if: steps.release.outputs.changed == 'true'
       run: npm ci
@@ -65,7 +85,7 @@ jobs:
       # https://llvm-vs-code-extensions.visualstudio.com/_usersSettings/tokens.
       run: npm run publish -- -p "${{ secrets.VSCODE_MARKETPLACE_TOKEN }}"
     - name: publish to OpenVSX
-      if: steps.release.outputs.changed == 'true'
+      if: steps.release.outputs.changed == 'true' && steps.release.outputs.publish_openvsx == 'true'
       # The token will expire. Regenerate it at:
       # https://open-vsx.org/user-settings/tokens
       run: npm run publish-openvsx -- -p "${{ secrets.OPENVSX_TOKEN }}"
