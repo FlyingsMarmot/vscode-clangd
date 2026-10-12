@@ -2,7 +2,7 @@
     "name": "flyingsmarmot-clangd-ucpp",
     "displayName": "clangd-uC++ (UW)",
     "description": "uC++/C/C++ completion, navigation, and insights",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "publisher": "FlyingsMarmotUW",
     "license": "MIT",
     "homepage": "https://github.com/FlyingsMarmot/vscode-clangd",
